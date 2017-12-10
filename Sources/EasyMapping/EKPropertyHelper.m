@@ -144,6 +144,18 @@ ignoreMissingFields:(BOOL)ignoreMissingFields
 
 +(void)setValue:(id)value onObject:(id)object forKeyPath:(NSString *)keyPath
 {
+    // Converting NSString to NSNumber if possible
+    if ([value isKindOfClass:[NSString class]])
+    {
+        NSCharacterSet *notDigits = [NSCharacterSet characterSetWithCharactersInString:@"0123456789."].invertedSet;
+        if ([value rangeOfCharacterFromSet:notDigits].location == NSNotFound)
+        {
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            numberFormatter.decimalSeparator = @".";
+            value = [numberFormatter numberFromString:value];
+        }
+    }
+    
     if ([(id <NSObject>)object isKindOfClass:[NSManagedObject class]])
     {
         // Reducing update times in CoreData
